@@ -10,23 +10,7 @@ npm install handlebars-layout
 
 ## Partial by Path
 
-**layout.hbs**
-
-```handlebars
-<html>
-    <body>
-        {{#block "header"}}
-            <h1>Hello World</h1>
-        {{/block}}
-        {{#block "main"}}
-            <p>Lorem ipsum.</p>
-        {{/block}}
-        {{#block "footer"}}
-            <p>&copy; 1999</p>
-        {{/block}}
-    </body>
-</html>
-```
+It will try to load partials of which the references start with either `./`, `../` or `/` and not registered yet.
 
 **page.hbs**
 
@@ -43,6 +27,24 @@ npm install handlebars-layout
         <p>MIT License</p>
     {{/content}}
 {{/extend}}
+```
+
+**layout.hbs**
+
+```handlebars
+<html>
+    <body>
+        {{#block "header"}}
+            <h1>Hello World</h1>
+        {{/block}}
+        {{#block "main"}}
+            <p>Lorem ipsum.</p>
+        {{/block}}
+        {{#block "footer"}}
+            <p>&copy; 1999</p>
+        {{/block}}
+    </body>
+</html>
 ```
 
 Check out [original repository](https://github.com/shannonmoeller/handlebars-layouts) for more usage.

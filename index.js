@@ -88,24 +88,24 @@ function mixin(target) {
 
 /* istanbul ignore next */
 function loadTemplateFromFile(dir, relPath) {
-    relPath = path.resolve(dir, relPath);
-    
-    var possiblePaths;
-    
-    if (/\.(?:hbs|handlebars)$/.test(relPath)) {
-        possiblePaths = [relPath];
-    } else {
-        possiblePaths = [relPath + '.hbs', relPath + '.handlebars'];
-    }
-    
-    for (var i = 0; i < possiblePaths.length; i++) {
-        var possiblePath = possiblePaths[i];
-        if (fs.existsSync(possiblePath)) {
-            return fs.readFileSync(possiblePath, 'utf-8');
-        }
-    }
-    
-    return null;
+	relPath = path.resolve(dir, relPath);
+	
+	var possiblePaths;
+	
+	if (/\.(?:hbs|handlebars)$/.test(relPath)) {
+		possiblePaths = [relPath];
+	} else {
+		possiblePaths = [relPath + '.hbs', relPath + '.handlebars'];
+	}
+	
+	for (var i = 0; i < possiblePaths.length; i++) {
+		var possiblePath = possiblePaths[i];
+		if (fs.existsSync(possiblePath)) {
+			return fs.readFileSync(possiblePath, 'utf-8');
+		}
+	}
+	
+	return null;
 }
 
 /**
@@ -141,18 +141,18 @@ function layout(handlebars) {
 				template = handlebars.partials[name];
 
 			// Partial template required
-            if (template == null) {
-                /* istanbul ignore if */
-                if (/^\.{0,2}\//.test(name)) {
-                    template = loadTemplateFromFile(path.dirname(context.filename), name);
-                    
-                    if (template == null) {
-                        throw new Error('Can not find partial \'' + name + '\' referenced in \'' + context.filename + '\'');
-                    }
-                } else {
-				    throw new Error('Missing partial: \'' + name + '\'');
-                }
-            }
+			if (template == null) {
+				/* istanbul ignore if */
+				if (/^\.{0,2}\//.test(name)) {
+					template = loadTemplateFromFile(path.dirname(context.filename), name);
+					
+					if (template == null) {
+						throw new Error('Can not find partial \'' + name + '\' referenced in \'' + context.filename + '\'');
+					}
+				} else {
+					throw new Error('Missing partial: \'' + name + '\'');
+				}
+			}
 
 			// Compile partial, if needed
 			if (typeof template !== 'function') {

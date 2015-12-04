@@ -1,6 +1,6 @@
 {
   "name": "handlebars-layout",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A fork of `handlebars-layouts` enables partial by path (Node.js).",
   "keywords": [
     "blocks",
