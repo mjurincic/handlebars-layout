@@ -1,5 +1,8 @@
 'use strict';
 
+var path = require('path');
+var fs = require('fs');
+
 var hasOwn = Object.prototype.hasOwnProperty;
 
 function noop() {
@@ -83,6 +86,28 @@ function mixin(target) {
 	return target;
 }
 
+/* istanbul ignore next */
+function loadTemplateFromFile(dir, relPath) {
+    relPath = path.resolve(dir, relPath);
+    
+    var possiblePaths;
+    
+    if (/\.(?:hbs|handlebars)$/.test(relPath)) {
+        possiblePaths = [relPath];
+    } else {
+        possiblePaths = [relPath + '.hbs', relPath + '.handlebars'];
+    }
+    
+    for (var i = 0; i < possiblePaths.length; i++) {
+        var possiblePath = possiblePaths[i];
+        if (fs.existsSync(possiblePath)) {
+            return fs.readFileSync(possiblePath, 'utf-8');
+        }
+    }
+    
+    return null;
+}
+
 /**
  * Generates an object of layout helpers.
  *
@@ -90,7 +115,7 @@ function mixin(target) {
  * @param {Object} handlebars Handlebars instance.
  * @return {Object} Object of helpers.
  */
-function layouts(handlebars) {
+function layout(handlebars) {
 	var helpers = {
 		/**
 		 * @method extend
@@ -116,9 +141,18 @@ function layouts(handlebars) {
 				template = handlebars.partials[name];
 
 			// Partial template required
-			if (template == null) {
-				throw new Error('Missing partial: \'' + name + '\'');
-			}
+            if (template == null) {
+                /* istanbul ignore if */
+                if (/^\.{0,2}\//.test(name)) {
+                    template = loadTemplateFromFile(path.dirname(context.filename), name);
+                    
+                    if (template == null) {
+                        throw new Error('Can not find partial \'' + name + '\' referenced in \'' + context.filename + '\'');
+                    }
+                } else {
+				    throw new Error('Missing partial: \'' + name + '\'');
+                }
+            }
 
 			// Compile partial, if needed
 			if (typeof template !== 'function') {
@@ -219,12 +253,12 @@ function layouts(handlebars) {
  * @return {Object} Object of helpers.
  * @static
  */
-layouts.register = function (handlebars) {
-	var helpers = layouts(handlebars);
+layout.register = function (handlebars) {
+	var helpers = layout(handlebars);
 
 	handlebars.registerHelper(helpers);
 
 	return helpers;
 };
 
-module.exports = layouts;
+module.exports = layout;
