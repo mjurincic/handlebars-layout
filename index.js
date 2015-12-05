@@ -149,13 +149,16 @@ function layout(handlebars) {
 					if (template == null) {
 						throw new Error('Can not find partial \'' + name + '\' referenced in \'' + context.filename + '\'');
 					}
+					
+					template = handlebars.compile(template);
+					
+					if (context.cache) {
+						handlebars.partials[name] = template;
+					}
 				} else {
 					throw new Error('Missing partial: \'' + name + '\'');
 				}
-			}
-
-			// Compile partial, if needed
-			if (typeof template !== 'function') {
+			} else if (typeof template !== 'function') {
 				template = handlebars.compile(template);
 			}
 
