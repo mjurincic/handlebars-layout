@@ -23,22 +23,5 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/vilic/handlebars-layout.git"
-  },
-  "scripts": {
-    "lint": "eslint index.js gulpfile.js test/*.js",
-    "test": "gulp test"
-  },
-  "devDependencies": {
-    "expect": "^1.6.0",
-    "gulp": "^3.9.0",
-    "gulp-istanbul": "^0.10.0",
-    "gulp-mocha": "^2.1.1",
-    "handlebars": "~3.0",
-    "through2": "^2.0.0",
-    "vinyl-fs": "^1.0.0"
-  },
-  "engines": {
-    "node": ">= 0.10"
-  },
-  "dependencies": {}
+  }
 }
