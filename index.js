@@ -89,22 +89,22 @@ function mixin(target) {
 /* istanbul ignore next */
 function loadTemplateFromFile(dir, relPath) {
 	relPath = path.resolve(dir, relPath);
-	
+
 	var possiblePaths;
-	
+
 	if (/\.(?:hbs|handlebars)$/.test(relPath)) {
 		possiblePaths = [relPath];
 	} else {
 		possiblePaths = [relPath + '.hbs', relPath + '.handlebars'];
 	}
-	
+
 	for (var i = 0; i < possiblePaths.length; i++) {
 		var possiblePath = possiblePaths[i];
 		if (fs.existsSync(possiblePath)) {
 			return fs.readFileSync(possiblePath, 'utf-8');
 		}
 	}
-	
+
 	return null;
 }
 
@@ -140,18 +140,21 @@ function layout(handlebars) {
 				data = handlebars.createFrame(options.data),
 				template = handlebars.partials[name];
 
+			context.$$layoutStack = context.$$layoutStack || [];
+			context.$$layoutActions = context.$$layoutActions || {};
+
 			// Partial template required
 			if (template == null) {
 				/* istanbul ignore if */
 				if (/^\.{0,2}\//.test(name)) {
 					template = loadTemplateFromFile(path.dirname(context.filename), name);
-					
+
 					if (template == null) {
 						throw new Error('Can not find partial \'' + name + '\' referenced in \'' + context.filename + '\'');
 					}
-					
+
 					template = handlebars.compile(template);
-					
+
 					if (context.cache) {
 						handlebars.partials[name] = template;
 					}
@@ -166,7 +169,15 @@ function layout(handlebars) {
 			getStack(context).push(fn);
 
 			// Render partial
-			return template(context, { data: data });
+			return template(
+				Object.assign({}, context, {
+					filenames: context.filenames ?
+						context.filenames.concat([context.filename]) :
+						[context.filename],
+					filename: path.resolve(path.dirname(context.filename), name),
+				}),
+				{ data: data }
+			);
 		},
 
 		/**
@@ -201,7 +212,13 @@ function layout(handlebars) {
 
 			var fn = options.fn || noop,
 				data = handlebars.createFrame(options.data),
-				context = this || {};
+				context = this || {},
+				context = Object.assign({}, this);
+
+			if (context.filenames && context.filenames.length) {
+				context.filenames = context.filenames.concat();
+				context.filename = context.filenames.pop();
+			}
 
 			applyStack(context);
 
